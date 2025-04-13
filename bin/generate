@@ -20,7 +20,7 @@ def read_template(path):
 def compute_changed_workspaces(base_ref, tmpl):
     try:
         prev_tmpl = yaml.safe_load(subprocess.check_output(
-            ['git', 'show', '{}:{}'.format(base_ref, TMPL_PATH)]))
+            ['git', 'show', 'origin/{}:{}'.format(base_ref, TMPL_PATH)]))
 
         changed = []
         for k, v in tmpl.items():
