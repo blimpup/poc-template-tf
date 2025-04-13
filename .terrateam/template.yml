@@ -1,0 +1,24 @@
+base:
+  depends_on: []
+  resources:
+    core_resource:
+      type: null_resource
+    another_core_resource:
+      type: null_resource
+networking:
+  depends_on: [base]
+  resources:
+    vpc:
+      type: null_resource
+    elb:
+      type: null_resource
+database:
+  depends_on: [networking]
+  resources:
+    rds:
+      type: null_resource
+webservice:
+  depends_on: [database, networking]
+  resources:
+    lambda_app:
+      type: null_resource
