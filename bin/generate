@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -17,31 +18,18 @@ def read_template(path):
         return yaml.safe_load(f.read())
 
 
-def compute_changed_workspaces(base_ref, tmpl):
-    try:
-        prev_tmpl = yaml.safe_load(subprocess.check_output(
-            ['git', 'show', 'origin/{}:{}'.format(base_ref, TMPL_PATH)]))
-
-        changed = []
-        for k, v in tmpl.items():
-            if v != prev_tmpl.get(k):
-                changed.append(k)
-
-        return changed
-    except subprocess.CalledProcessError:
-        # If we failed to show, return that everything changed
-        return list(tmpl.keys())
+def compute_id(v):
+    return hashlib.sha256(json.dumps(v).encode('utf-8')).hexdigest()
 
 
 def do_build_tree(args):
     tmpl = read_template(TMPL_PATH)
-    changes = compute_changed_workspaces(os.environ['TERRATEAM_BASE_REF'], tmpl)
     files = [
         {
             'path': os.path.join(k, 'main.tf'),
-            'changed': k in changes,
+            'id': compute_id(v),
         }
-        for k in tmpl.keys()
+        for k, v in tmpl.items()
     ]
     print(json.dumps(files))
 
