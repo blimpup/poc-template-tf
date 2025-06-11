@@ -19,7 +19,7 @@ def read_template(path):
 
 
 def compute_id(v):
-    return hashlib.sha256(json.dumps(v).encode('utf-8')).hexdigest()
+    return hashlib.sha256(json.dumps(v, sort_keys=True).encode('utf-8')).hexdigest()
 
 
 def do_build_tree(args):
